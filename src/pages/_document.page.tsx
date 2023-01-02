@@ -1,4 +1,5 @@
 import { getCssText } from '@ignite-ui/react'
+
 import { Head, Html, Main, NextScript } from 'next/document'
 
 export default function Document() {
@@ -6,6 +7,7 @@ export default function Document() {
     <Html lang="en">
       <Head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
+
         <link
           rel="preconnect"
           href="https://fonts.gstatic.com"
@@ -24,8 +26,10 @@ export default function Document() {
           }}
         />
       </Head>
+
       <body>
         <Main />
+
         <NextScript />
       </body>
     </Html>
