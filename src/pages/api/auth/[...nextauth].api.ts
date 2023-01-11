@@ -21,7 +21,11 @@ export const authOptions: AuthOptions = {
 
   callbacks: {
     async signIn({ account }) {
-      if (!account?.scope?.includes(GOOGLE_CALENDAR_SCOPE)) {
+      if (
+        !GOOGLE_CALENDAR_SCOPE.split(' ').every((scope) =>
+          account?.scope?.includes(scope),
+        )
+      ) {
         return '/register/connect-calendar?error=permissions'
       }
 
