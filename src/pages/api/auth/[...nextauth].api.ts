@@ -1,7 +1,7 @@
 import { NextApiRequest, NextApiResponse } from 'next'
 import NextAuth, { AuthOptions } from 'next-auth'
 
-import GoogleProvider from 'next-auth/providers/google'
+import GoogleProvider, { GoogleProfile } from 'next-auth/providers/google'
 import { PrismaAdapter } from '../../../lib/auth/prisma-adapter'
 
 const GOOGLE_CALENDAR_SCOPE =
@@ -25,6 +25,15 @@ export function buildNextAuthOptions(
           params: {
             scope: GOOGLE_CALENDAR_SCOPE,
           },
+        },
+        profile: (profile: GoogleProfile) => {
+          return {
+            id: profile.sub,
+            name: profile.name,
+            username: '',
+            email: profile.email,
+            avatar_url: profile.picture,
+          }
         },
       }),
 
