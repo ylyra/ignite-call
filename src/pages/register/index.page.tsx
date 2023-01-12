@@ -7,17 +7,24 @@ import { ArrowRight } from 'phosphor-react'
 import { useCallback } from 'react'
 import { SubmitHandler, useForm } from 'react-hook-form'
 import { z } from 'zod'
+
 import { api } from '../../lib/axios'
 import { Container, Form, FormError, Header } from './styles'
 
 const schema = z.object({
   username: z
+
     .string()
+
     .min(3, 'O usuário deve ter pelo menos 3 caracteres')
+
     .regex(/^([a-z\\-]+)$/i, 'O usuário deve conter apenas letras e hifens')
+
     .transform((username) => username.toLowerCase()),
+
   fullName: z.string().min(3, 'O nome deve ter pelo menos 3 caracteres'),
 })
+
 type FormValues = z.infer<typeof schema>
 
 type RegisterProps = {
@@ -26,10 +33,13 @@ type RegisterProps = {
 
 export default function Register({ username }: RegisterProps) {
   const router = useRouter()
+
   const { formState, handleSubmit, register } = useForm<FormValues>({
     resolver: zodResolver(schema),
+
     defaultValues: {
       username,
+
       fullName: '',
     },
   })
@@ -48,6 +58,7 @@ export default function Register({ username }: RegisterProps) {
         console.error(error)
       }
     },
+
     [router],
   )
 
@@ -63,21 +74,27 @@ export default function Register({ username }: RegisterProps) {
 
         <MultiStep size={4} currentStep={1} />
       </Header>
+
       <Form as="form" onSubmit={handleSubmit(onUsernameRegister)}>
         <label>
           <Text size="sm">Nome de usuário</Text>
+
           <TextInput
             prefix="ignite.com/"
             placeholder="seu-usuario"
             {...register('username')}
           />
+
           {formState.errors.username && (
             <FormError>{formState.errors.username.message}</FormError>
           )}
         </label>
+
         <label>
           <Text size="sm">Nome completo</Text>
+
           <TextInput placeholder="Seu nome" {...register('fullName')} />
+
           {formState.errors.fullName && (
             <FormError>{formState.errors.fullName.message}</FormError>
           )}
@@ -109,6 +126,7 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
     return {
       redirect: {
         destination: '/',
+
         permanent: false,
       },
     }

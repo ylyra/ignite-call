@@ -9,17 +9,24 @@ import { Form, FormAnnotation } from './styles'
 
 const schema = z.object({
   username: z
+
     .string()
+
     .min(3, 'O usuário deve ter pelo menos 3 caracteres')
+
     .regex(/^([a-z\\-]+)$/i, 'O usuário deve conter apenas letras e hifens')
+
     .transform((username) => username.toLowerCase()),
 })
+
 type FormValues = z.infer<typeof schema>
 
 export function ClaimUsernameForm() {
   const router = useRouter()
+
   const { formState, handleSubmit, register } = useForm<FormValues>({
     resolver: zodResolver(schema),
+
     defaultValues: {
       username: '',
     },
@@ -29,6 +36,7 @@ export function ClaimUsernameForm() {
     async (data) => {
       await router.push(`/register?username=${data.username}`)
     },
+
     [router],
   )
 
@@ -47,6 +55,7 @@ export function ClaimUsernameForm() {
           <ArrowRight />
         </Button>
       </Form>
+
       <FormAnnotation>
         <Text size="sm">
           {formState.errors.username

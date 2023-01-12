@@ -12,9 +12,11 @@ const ERRORS = {
 export default function Register() {
   const session = useSession()
   const router = useRouter()
+
   const errorMessage = router.query.error
     ? ERRORS[router.query.error as keyof typeof ERRORS]
     : ''
+
   const isSignedIn = session.status === 'authenticated'
 
   const handleConnectCalendar = async () => {
