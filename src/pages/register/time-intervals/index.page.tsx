@@ -15,9 +15,12 @@ import {
   useForm,
 } from "react-hook-form";
 import { z } from "zod";
+import { api } from "../../../lib/axios";
+import { convertTimeStringToMinutes } from "../../../utils/convert-time-string-to-minutes";
 import { getWeekDays } from "../../../utils/get-week-days";
 import { Container, Header } from "../styles";
 import {
+  FormError,
   IntervalBox,
   IntervalDay,
   IntervalInputs,
@@ -26,20 +29,47 @@ import {
 } from "./styles";
 
 const timeIntervalsFormSchema = z.object({
-  intervals: z.array(
-    z.object({
-      weekDay: z.number().min(0).max(6),
-      enabled: z.boolean(),
-      startTime: z.string().regex(/^\d{2}:\d{2}$/),
-      endTime: z.string().regex(/^\d{2}:\d{2}$/),
+  intervals: z
+    .array(
+      z.object({
+        weekDay: z.number().min(0).max(6),
+        enabled: z.boolean(),
+        startTime: z.string(),
+        endTime: z.string(),
+      })
+    )
+    .length(7)
+    .transform((intervals) => intervals.filter((interval) => interval.enabled))
+    .refine((intervals) => intervals.length > 0, {
+      message: "Selecione pelo menos um dia da semana",
     })
-  ),
+    .transform((intervals) => {
+      return intervals.map((interval) => {
+        return {
+          weekDay: interval.weekDay,
+          startTimeInMinutes: convertTimeStringToMinutes(interval.startTime),
+          endTimeInMinutes: convertTimeStringToMinutes(interval.endTime),
+        };
+      });
+    })
+    .refine(
+      (intervals) => {
+        return intervals.every(
+          (interval) =>
+            interval.endTimeInMinutes - 60 >= interval.startTimeInMinutes
+        );
+      },
+      {
+        message: "O intervalo de tempo deve ser de no mínimo 1 hora",
+      }
+    ),
 });
-type FormProps = z.infer<typeof timeIntervalsFormSchema>;
+type TimeIntervalsFormInput = z.input<typeof timeIntervalsFormSchema>;
+type TimeIntervalsFormOutput = z.output<typeof timeIntervalsFormSchema>;
 
 export default function TimeIntervals() {
   const { register, handleSubmit, formState, control, watch } =
-    useForm<FormProps>({
+    useForm<TimeIntervalsFormInput>({
       resolver: zodResolver(timeIntervalsFormSchema),
       defaultValues: {
         intervals: [
@@ -95,8 +125,12 @@ export default function TimeIntervals() {
   const intervals = watch("intervals");
   const weekDays = getWeekDays();
 
-  const handleSetTimeIntervals: SubmitHandler<FormProps> = () => {
-    console.log("oi");
+  const handleSetTimeIntervals: SubmitHandler<TimeIntervalsFormInput> = async (
+    data
+  ) => {
+    const { intervals } = data as unknown as TimeIntervalsFormOutput;
+
+    await api.post("/users/time-intervals", { intervals });
   };
 
   return (
@@ -112,7 +146,10 @@ export default function TimeIntervals() {
         <MultiStep size={4} currentStep={3} />
       </Header>
 
-      <IntervalBox as="form" onSubmit={handleSubmit(handleSetTimeIntervals)}>
+      <IntervalBox
+        as="form"
+        onSubmit={handleSubmit(handleSetTimeIntervals, console.log)}
+      >
         <IntervalsContainer>
           {fields.map((field, index) => (
             <IntervalItem key={field.id}>
@@ -151,6 +188,10 @@ export default function TimeIntervals() {
             </IntervalItem>
           ))}
         </IntervalsContainer>
+
+        {formState.errors.intervals?.message && (
+          <FormError size="sm">{formState.errors.intervals?.message}</FormError>
+        )}
 
         <Button type="submit" disabled={formState.isSubmitting}>
           Próximo passo

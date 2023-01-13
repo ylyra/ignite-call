@@ -1,12 +1,16 @@
-import 'next-auth'
+import "next-auth";
 
-declare module 'next-auth' {
+declare module "next-auth" {
   interface User {
-    id: string
-    name: string
-    email: string
-    username: string
-    avatar_url: string
-    emailVerified?: Date | null
+    id: string;
+    name: string;
+    email: string;
+    username: string;
+    avatar_url: string;
+    emailVerified?: Date | null;
+  }
+
+  interface Session {
+    user: User;
   }
 }
