@@ -1,27 +1,28 @@
-import { Button, Heading, MultiStep, Text } from '@ignite-ui/react'
-import { signIn, useSession } from 'next-auth/react'
-import { useRouter } from 'next/router'
-import { ArrowRight, Check } from 'phosphor-react'
-import { Container, Header } from '../styles'
-import { AuthError, ConnectBox, ConnectItem } from './styles'
+import { Button, Heading, MultiStep, Text } from "@ignite-ui/react";
+import { signIn, useSession } from "next-auth/react";
+import Link from "next/link";
+import { useRouter } from "next/router";
+import { ArrowRight, Check } from "phosphor-react";
+import { Container, Header } from "../styles";
+import { AuthError, ConnectBox, ConnectItem } from "./styles";
 
 const ERRORS = {
-  permissions: 'Você precisa permitir o acesso ao seu calendário',
-}
+  permissions: "Você precisa permitir o acesso ao seu calendário",
+};
 
 export default function Register() {
-  const session = useSession()
-  const router = useRouter()
+  const session = useSession();
+  const router = useRouter();
 
   const errorMessage = router.query.error
     ? ERRORS[router.query.error as keyof typeof ERRORS]
-    : ''
+    : "";
 
-  const isSignedIn = session.status === 'authenticated'
+  const isSignedIn = session.status === "authenticated";
 
   const handleConnectCalendar = async () => {
-    signIn('google')
-  }
+    await signIn("google");
+  };
 
   return (
     <Container>
@@ -59,11 +60,17 @@ export default function Register() {
 
         {errorMessage && <AuthError size="sm">{errorMessage}</AuthError>}
 
-        <Button type="submit" disabled={!isSignedIn}>
+        {/* @ts-ignore */}
+        <Button
+          type="submit"
+          as={Link}
+          href="/register/time-intervals"
+          disabled={!isSignedIn}
+        >
           Próximo passo
           <ArrowRight />
         </Button>
       </ConnectBox>
     </Container>
-  )
+  );
 }
