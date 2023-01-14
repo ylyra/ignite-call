@@ -1,15 +1,15 @@
-import { NextApiRequest, NextApiResponse } from 'next'
-import NextAuth, { AuthOptions } from 'next-auth'
+import { NextApiRequest, NextApiResponse, NextPageContext } from "next";
+import NextAuth, { AuthOptions } from "next-auth";
 
-import GoogleProvider, { GoogleProfile } from 'next-auth/providers/google'
-import { PrismaAdapter } from '../../../lib/auth/prisma-adapter'
+import GoogleProvider, { GoogleProfile } from "next-auth/providers/google";
+import { PrismaAdapter } from "../../../lib/auth/prisma-adapter";
 
 const GOOGLE_CALENDAR_SCOPE =
-  'https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/calendar'
+  "https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/calendar";
 
 export function buildNextAuthOptions(
-  req: NextApiRequest,
-  res: NextApiResponse,
+  req: NextApiRequest | NextPageContext["req"],
+  res: NextApiResponse | NextPageContext["res"]
 ): AuthOptions {
   return {
     // Configure one or more authentication providers
@@ -30,10 +30,10 @@ export function buildNextAuthOptions(
           return {
             id: profile.sub,
             name: profile.name,
-            username: '',
+            username: "",
             email: profile.email,
             avatar_url: profile.picture,
-          }
+          };
         },
       }),
 
@@ -43,25 +43,25 @@ export function buildNextAuthOptions(
     callbacks: {
       async signIn({ account }) {
         if (
-          !GOOGLE_CALENDAR_SCOPE.split(' ').every((scope) =>
-            account?.scope?.includes(scope),
+          !GOOGLE_CALENDAR_SCOPE.split(" ").every((scope) =>
+            account?.scope?.includes(scope)
           )
         ) {
-          return '/register/connect-calendar?error=permissions'
+          return "/register/connect-calendar?error=permissions";
         }
 
-        return true
+        return true;
       },
       session: async ({ session, user }) => {
         return {
           ...session,
           user,
-        }
+        };
       },
     },
-  }
+  };
 }
 
 export default async function auth(req: NextApiRequest, res: NextApiResponse) {
-  return await NextAuth(req, res, buildNextAuthOptions(req, res))
+  return await NextAuth(req, res, buildNextAuthOptions(req, res));
 }

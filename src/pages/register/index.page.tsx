@@ -1,66 +1,57 @@
-import { zodResolver } from '@hookform/resolvers/zod'
-import { Button, Heading, MultiStep, Text, TextInput } from '@ignite-ui/react'
-import { AxiosError } from 'axios'
-import { GetServerSideProps } from 'next'
-import { useRouter } from 'next/router'
-import { ArrowRight } from 'phosphor-react'
-import { useCallback } from 'react'
-import { SubmitHandler, useForm } from 'react-hook-form'
-import { z } from 'zod'
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Button, Heading, MultiStep, Text, TextInput } from "@ignite-ui/react";
+import { AxiosError } from "axios";
+import { GetServerSideProps } from "next";
+import { useRouter } from "next/router";
+import { ArrowRight } from "phosphor-react";
+import { useCallback } from "react";
+import { SubmitHandler, useForm } from "react-hook-form";
+import { z } from "zod";
 
-import { api } from '../../lib/axios'
-import { Container, Form, FormError, Header } from './styles'
+import { api } from "../../lib/axios";
+import { Container, Form, FormError, Header } from "./styles";
 
 const schema = z.object({
   username: z
-
     .string()
-
-    .min(3, 'O usuário deve ter pelo menos 3 caracteres')
-
-    .regex(/^([a-z\\-]+)$/i, 'O usuário deve conter apenas letras e hifens')
-
+    .min(3, "O usuário deve ter pelo menos 3 caracteres")
+    .regex(/^([a-z\\-]+)$/i, "O usuário deve conter apenas letras e hifens")
     .transform((username) => username.toLowerCase()),
+  fullName: z.string().min(3, "O nome deve ter pelo menos 3 caracteres"),
+});
 
-  fullName: z.string().min(3, 'O nome deve ter pelo menos 3 caracteres'),
-})
-
-type FormValues = z.infer<typeof schema>
+type FormValues = z.infer<typeof schema>;
 
 type RegisterProps = {
-  username: string
-}
+  username: string;
+};
 
 export default function Register({ username }: RegisterProps) {
-  const router = useRouter()
+  const router = useRouter();
 
   const { formState, handleSubmit, register } = useForm<FormValues>({
     resolver: zodResolver(schema),
-
     defaultValues: {
       username,
-
-      fullName: '',
+      fullName: "",
     },
-  })
+  });
 
   const onUsernameRegister: SubmitHandler<FormValues> = useCallback(
     async (data) => {
       try {
-        await api.post('/users', data)
+        await api.post("/users", data);
 
-        await router.push('/register/connect-calendar')
+        await router.push("/register/connect-calendar");
       } catch (error) {
         if (error instanceof AxiosError && error?.response?.data?.message) {
-          alert(error.response.data.message)
+          alert(error.response.data.message);
         }
-
-        console.error(error)
+        console.error(error);
       }
     },
-
-    [router],
-  )
+    [router]
+  );
 
   return (
     <Container>
@@ -82,7 +73,7 @@ export default function Register({ username }: RegisterProps) {
           <TextInput
             prefix="ignite.com/"
             placeholder="seu-usuario"
-            {...register('username')}
+            {...register("username")}
           />
 
           {formState.errors.username && (
@@ -93,7 +84,7 @@ export default function Register({ username }: RegisterProps) {
         <label>
           <Text size="sm">Nome completo</Text>
 
-          <TextInput placeholder="Seu nome" {...register('fullName')} />
+          <TextInput placeholder="Seu nome" {...register("fullName")} />
 
           {formState.errors.fullName && (
             <FormError>{formState.errors.fullName.message}</FormError>
@@ -106,29 +97,28 @@ export default function Register({ username }: RegisterProps) {
         </Button>
       </Form>
     </Container>
-  )
+  );
 }
 
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
   const querySchema = z.object({
     username: z.string().min(3),
-  })
+  });
 
   try {
-    const query = querySchema.parse(ctx.query)
+    const query = querySchema.parse(ctx.query);
 
     return {
       props: {
         username: query.username,
       },
-    }
+    };
   } catch (error) {
     return {
       redirect: {
-        destination: '/',
-
+        destination: "/",
         permanent: false,
       },
-    }
+    };
   }
-}
+};
