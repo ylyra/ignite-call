@@ -71,7 +71,7 @@ export function Calendar() {
       })),
       ...daysInMonthArray.map((date) => ({
         date,
-        disabled: false,
+        disabled: date.endOf("day").isBefore(dayjs()),
         hidden: false,
       })),
       ...nextMonthFillArray.map((date) => ({
@@ -101,8 +101,6 @@ export function Calendar() {
 
     return calendarWeeks;
   }, [currentDate]);
-
-  console.log(calendarWeeks);
 
   return (
     <CalendarContainer>
