@@ -121,6 +121,7 @@ export function PrismaAdapter(
     },
 
     async linkAccount(account) {
+      console.log(account);
       await prisma.account.create({
         data: {
           user: {
