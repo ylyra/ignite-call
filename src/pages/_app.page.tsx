@@ -1,11 +1,12 @@
-import { SessionProvider } from 'next-auth/react'
+import { SessionProvider } from "next-auth/react";
+import "../lib/dayjs";
 
-import type { AppProps } from 'next/app'
-import Head from 'next/head'
+import type { AppProps } from "next/app";
+import Head from "next/head";
 
-import { global } from '../styles/global'
+import { global } from "../styles/global";
 
-global()
+global();
 
 export default function App({
   Component,
@@ -19,5 +20,5 @@ export default function App({
       </Head>
       <Component {...pageProps} />
     </SessionProvider>
-  )
+  );
 }

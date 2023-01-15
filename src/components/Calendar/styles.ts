@@ -15,6 +15,7 @@ export const CalendarHeader = styled("div", {
 
 export const CalendarTitle = styled(Text, {
   fontWeight: "$medium",
+  textTransform: "capitalize",
 
   span: {
     color: "$gray200",
@@ -90,5 +91,13 @@ export const CalendarDay = styled("button", {
 
   "&:focus": {
     boxShadow: "0 0 0 2px $colors$gray100",
+  },
+
+  variants: {
+    hidden: {
+      true: {
+        opacity: 0.4,
+      },
+    },
   },
 });
