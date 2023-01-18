@@ -1,8 +1,11 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button, Text, TextArea, TextInput } from "@ignite-ui/react";
+import dayjs from "dayjs";
+import { useRouter } from "next/router";
 import { CalendarBlank, Clock } from "phosphor-react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { z } from "zod";
+import { api } from "../../../../../lib/axios";
 import { ConfirmForm, FormActions, FormError, FormHeader } from "./styles";
 
 const confirmFormSchema = z.object({
@@ -13,7 +16,15 @@ const confirmFormSchema = z.object({
 
 type ConfirmFormValues = z.infer<typeof confirmFormSchema>;
 
-export function ConfirmStep() {
+interface ConfirmStepProps {
+  schedulingDate: Date;
+  onCancelConfirmation: () => void;
+}
+
+export function ConfirmStep({
+  onCancelConfirmation,
+  schedulingDate,
+}: ConfirmStepProps) {
   const { formState, handleSubmit, register } = useForm<ConfirmFormValues>({
     resolver: zodResolver(confirmFormSchema),
     defaultValues: {
@@ -22,23 +33,38 @@ export function ConfirmStep() {
       notes: "",
     },
   });
-  const onConfirmSchedulingSubmit: SubmitHandler<ConfirmFormValues> = (
+  const router = useRouter();
+  const username = String(router.query.username);
+
+  const onConfirmSchedulingSubmit: SubmitHandler<ConfirmFormValues> = async (
     data
   ) => {
-    console.log("confirm");
+    const { name, email, notes } = data;
+
+    await api.post(`/users/${username}/schedule`, {
+      name,
+      email,
+      notes,
+      date: schedulingDate,
+    });
+
+    onCancelConfirmation();
   };
+
+  const describedDate = dayjs(schedulingDate).format("DD[ de ]MMMM[ de ]YYYY");
+  const describedTime = dayjs(schedulingDate).format("HH:mm");
 
   return (
     <ConfirmForm as="form" onSubmit={handleSubmit(onConfirmSchedulingSubmit)}>
       <FormHeader>
         <Text>
           <CalendarBlank />
-          22 de abril de 2021
+          {describedDate}
         </Text>
 
         <Text>
           <Clock />
-          10:00
+          {describedTime}
         </Text>
       </FormHeader>
 

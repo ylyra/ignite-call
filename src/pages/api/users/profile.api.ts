@@ -45,9 +45,8 @@ export default async function handler(
     } else {
       res.status(500).json({
         message: "Erro interno do servidor",
-        error,
+        errors: [],
       });
     }
   }
 }
-

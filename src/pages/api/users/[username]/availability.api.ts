@@ -83,7 +83,7 @@ export default async function handler(
     });
 
     const availableTimes = possibleTimes.filter((possibleTime) => {
-      const isTimeBlocked = !blockedTimes.some(
+      const isTimeBlocked = blockedTimes.some(
         (blockedTime) => blockedTime.date.getHours() === possibleTime
       );
 
@@ -94,7 +94,7 @@ export default async function handler(
       return !isTimeBlocked && !isTimeInPast;
     });
 
-    return res.json({ availableTimes, possibleTimes });
+    return res.json({ availableTimes, possibleTimes, blockedTimes });
   } catch (error) {
     if (error instanceof z.ZodError) {
       res.status(400).json({
@@ -104,7 +104,7 @@ export default async function handler(
     } else {
       res.status(500).json({
         message: "Erro interno do servidor",
-        error,
+        errors: [],
       });
     }
   }

@@ -1,3 +1,4 @@
+import dayjs from "dayjs";
 import { NextApiRequest, NextApiResponse } from "next";
 import { unstable_getServerSession } from "next-auth";
 import { z } from "zod";
@@ -43,6 +44,7 @@ export default async function handler(
     const availableWeekDays = await prisma.userTimeInterval.findMany({
       select: {
         week_day: true,
+        time_end_in_minutes: true,
       },
       where: {
         user_id: user.id,
@@ -71,6 +73,20 @@ export default async function handler(
     `;
 
     const blockedDates = blockedDatesRaw.map((item) => item.date);
+    const today = dayjs();
+
+    const todayWeekDay = availableWeekDays.find(
+      (availableWeekDay) => availableWeekDay.week_day === today.day()
+    );
+    const endHour = todayWeekDay
+      ? Math.floor(todayWeekDay.time_end_in_minutes / 60)
+      : 0;
+    const noAvailableHoursToday = todayWeekDay
+      ? today.endOf("day").hour() >= endHour
+      : false;
+    if (noAvailableHoursToday) {
+      blockedDates.push(today.get("date"));
+    }
 
     return res.json({ blockedWeekDays, blockedDates });
   } catch (error) {
@@ -82,7 +98,7 @@ export default async function handler(
     } else {
       res.status(500).json({
         message: "Erro interno do servidor",
-        error,
+        errors: [],
       });
     }
   }
