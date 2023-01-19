@@ -23,6 +23,9 @@ export function buildNextAuthOptions(
 
         authorization: {
           params: {
+            prompt: "consent",
+            access_type: "offline",
+            response_type: "code",
             scope: GOOGLE_CALENDAR_SCOPE,
           },
         },
