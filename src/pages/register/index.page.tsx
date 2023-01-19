@@ -2,6 +2,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Button, Heading, MultiStep, Text, TextInput } from "@ignite-ui/react";
 import { AxiosError } from "axios";
 import { GetServerSideProps } from "next";
+import { NextSeo } from "next-seo";
 import { useRouter } from "next/router";
 import { ArrowRight } from "phosphor-react";
 import { useCallback } from "react";
@@ -54,49 +55,52 @@ export default function Register({ username }: RegisterProps) {
   );
 
   return (
-    <Container>
-      <Header>
-        <Heading as="strong">Bem-vindo ao Ignite Call</Heading>
+    <>
+      <NextSeo title="Crie uma conta" />
+      <Container>
+        <Header>
+          <Heading as="strong">Bem-vindo ao Ignite Call</Heading>
 
-        <Text>
-          Precisamos de algumas informações para criar seu perfil. Ah, você pode
-          editar essas informações depois
-        </Text>
+          <Text>
+            Precisamos de algumas informações para criar seu perfil. Ah, você
+            pode editar essas informações depois
+          </Text>
 
-        <MultiStep size={4} currentStep={1} />
-      </Header>
+          <MultiStep size={4} currentStep={1} />
+        </Header>
 
-      <Form as="form" onSubmit={handleSubmit(onUsernameRegister)}>
-        <label>
-          <Text size="sm">Nome de usuário</Text>
+        <Form as="form" onSubmit={handleSubmit(onUsernameRegister)}>
+          <label>
+            <Text size="sm">Nome de usuário</Text>
 
-          <TextInput
-            prefix="ignite.com/"
-            placeholder="seu-usuario"
-            {...register("username")}
-          />
+            <TextInput
+              prefix="ignite.com/"
+              placeholder="seu-usuario"
+              {...register("username")}
+            />
 
-          {formState.errors.username && (
-            <FormError>{formState.errors.username.message}</FormError>
-          )}
-        </label>
+            {formState.errors.username && (
+              <FormError>{formState.errors.username.message}</FormError>
+            )}
+          </label>
 
-        <label>
-          <Text size="sm">Nome completo</Text>
+          <label>
+            <Text size="sm">Nome completo</Text>
 
-          <TextInput placeholder="Seu nome" {...register("fullName")} />
+            <TextInput placeholder="Seu nome" {...register("fullName")} />
 
-          {formState.errors.fullName && (
-            <FormError>{formState.errors.fullName.message}</FormError>
-          )}
-        </label>
+            {formState.errors.fullName && (
+              <FormError>{formState.errors.fullName.message}</FormError>
+            )}
+          </label>
 
-        <Button type="submit" disabled={formState.isSubmitting}>
-          Próximo passo
-          <ArrowRight />
-        </Button>
-      </Form>
-    </Container>
+          <Button type="submit" disabled={formState.isSubmitting}>
+            Próximo passo
+            <ArrowRight />
+          </Button>
+        </Form>
+      </Container>
+    </>
   );
 }
 

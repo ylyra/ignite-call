@@ -1,5 +1,6 @@
 import { Button, Heading, MultiStep, Text } from "@ignite-ui/react";
 import { signIn, useSession } from "next-auth/react";
+import { NextSeo } from "next-seo";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { ArrowRight, Check } from "phosphor-react";
@@ -26,6 +27,7 @@ export default function Register() {
 
   return (
     <Container>
+      <NextSeo title="Conecte sua agenda" noindex />
       <Header>
         <Heading as="strong">Conecte sua agenda!</Heading>
 

@@ -7,6 +7,7 @@ import {
   Text,
   TextInput,
 } from "@ignite-ui/react";
+import { NextSeo } from "next-seo";
 import { useRouter } from "next/router";
 import { ArrowRight } from "phosphor-react";
 import {
@@ -139,6 +140,7 @@ export default function TimeIntervals() {
 
   return (
     <Container>
+      <NextSeo title="Selecione sua disponibilidade" noindex />
       <Header>
         <Heading as="strong">Quase lá</Heading>
 
